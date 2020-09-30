@@ -5,7 +5,7 @@ public class EasyAI extends User{
     @Override
     public void setMove() {
         while (true) {
-            move = new int[]{Main.random.nextInt(3), Main.random.nextInt(3)};
+            move = new int[]{Main.random.nextInt(Main.fieldSize), Main.random.nextInt(Main.fieldSize)};
             if (state[move[0]][move[1]] == '_') {
                 break;
             }

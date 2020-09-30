@@ -6,10 +6,14 @@ import java.util.Scanner;
 public class Main {
     public final static Scanner scanner = new Scanner(System.in);
     public final static Random random = new Random();
+    public final static int fieldSize = 3;
 
     // given a field state print the field
     private static void printField (char[][] state) {
-        System.out.println("---------");
+        for (int i = 0; i < 4 + 2 * fieldSize - 1; i++) {
+            System.out.print("-");
+        }
+        System.out.print("\n");
         for (char[] chars : state) {
             System.out.print("| ");
             for (int j = 0; j < state.length; j++) {
@@ -17,7 +21,10 @@ public class Main {
             }
             System.out.print("|\n");
         }
-        System.out.println("---------");
+        for (int i = 0; i < 4 + 2 * fieldSize - 1; i++) {
+            System.out.print("-");
+        }
+        System.out.print("\n");
     }
 
     // check if user coordinates are numbers
@@ -37,14 +44,14 @@ public class Main {
         return xy;
     }
 
-    // check if user coordinates are within [1,3]
+    // check if user coordinates are within [1,fieldSize]
     private static int[] checkCoordinates () {
         int []xy = ifNumbers();
         while (true) {
-            if (xy[0] <= 3 && xy[0] >= 1 && xy[1] <= 3 && xy[1] >= 1) {
+            if (xy[0] <= fieldSize && xy[0] >= 1 && xy[1] <= fieldSize && xy[1] >= 1) {
                 break;
             } else {
-                System.out.println("Coordinates should be from 1 to 3!");
+                System.out.printf("Coordinates should be from 1 to %d!", fieldSize);
                 xy = ifNumbers();
             }
         }
@@ -55,14 +62,14 @@ public class Main {
     public static int[] checkEmpty (char[][] state) {
         int[]xy = checkCoordinates();
         int temp = xy[0];
-        xy[0] = 3- xy[1];
+        xy[0] = fieldSize - xy[1];
         xy[1] = temp - 1;
 
         while (state[xy[0]][xy[1]] != '_') {
             System.out.println("This cell is occupied! Choose another one!");
             xy = checkCoordinates();
             temp = xy[0];
-            xy[0] = 3 - xy[1];
+            xy[0] = fieldSize - xy[1];
             xy[1] = temp -1;
         }
         return xy;
@@ -98,25 +105,65 @@ public class Main {
     }
 
     private static String gameResults (char[][] state) {
-        String[] fieldResults = new String[8];
-        fieldResults[0] = Character.toString(state[0][0]) + state[0][1] + state[0][2];
-        fieldResults[1] = Character.toString(state[1][0]) + state[1][1] + state[1][2];
-        fieldResults[2] = Character.toString(state[2][0]) + state[2][1] + state[2][2];
-        fieldResults[3] = Character.toString(state[0][0]) + state[1][0] + state[2][0];
-        fieldResults[4] = Character.toString(state[0][1]) + state[1][1] + state[2][1];
-        fieldResults[5] = Character.toString(state[0][2]) + state[1][2] + state[2][2];
-        fieldResults[6] = Character.toString(state[0][0]) + state[1][1] + state[2][2];
-        fieldResults[7] = Character.toString(state[0][2]) + state[1][1] + state[2][0];
-        int numOf3X = 0;
-        int numOf3Y = 0;
+        String[] fieldResults = new String[fieldSize * 2 + 2];
+        int counter = 0;
+        for (int i = 0; i < state.length; i++) { // each row
+            for (int j = 0; j < state.length; j++) { // each column
+                fieldResults[counter] += Character.toString(state[i][j]);
+            }
+            counter += 1;
+        }
+
+        for (int i = 0; i < state.length; i++) { // each row
+            for (int j = 0; j < state.length; j++) { // each column
+                fieldResults[counter] += Character.toString(state[j][i]);
+            }
+            counter += 1;
+        }
+
+        for (int i = 0; i < state.length; i++) {
+            fieldResults[counter] = Character.toString(state[i][i]);
+        }
+
+        counter += 1;
+
+        for (int i = 0; i < state.length; i++) {
+            for (int j = state.length - 1; j >= 0; j--) {
+                fieldResults[counter] = Character.toString(state[i][j]);
+            }
+        }
+//        fieldResults[0] = Character.toString(state[0][0]) + state[0][1] + state[0][2];
+//        fieldResults[1] = Character.toString(state[1][0]) + state[1][1] + state[1][2];
+//        fieldResults[2] = Character.toString(state[2][0]) + state[2][1] + state[2][2];
+//        fieldResults[3] = Character.toString(state[0][0]) + state[1][0] + state[2][0];
+//        fieldResults[4] = Character.toString(state[0][1]) + state[1][1] + state[2][1];
+//        fieldResults[5] = Character.toString(state[0][2]) + state[1][2] + state[2][2];
+//        fieldResults[6] = Character.toString(state[0][0]) + state[1][1] + state[2][2];
+//        fieldResults[7] = Character.toString(state[0][2]) + state[1][1] + state[2][0];
+
         int emptyCells = 0;
         String result = null;
+        int xInRow = 0;
+        int yInRow = 0;
 
         for (String fieldResult : fieldResults) {
-            if (fieldResult.equals("XXX")) {
-                numOf3X += 1;
-            } else if (fieldResult.equals("OOO")) {
-                numOf3Y += 1;
+            for (int i = 0; i < fieldResult.length(); i++) {
+                if (fieldResult.charAt(i) == 'X') {
+                    xInRow += 1;
+                }
+                if (fieldResult.charAt(i) == 'O') {
+                    yInRow += 1;
+                }
+            }
+            if (xInRow == fieldSize) {
+                result = "X wins";
+                break;
+            } else if (yInRow == fieldSize) {
+                result = "O wins";
+                break;
+            } else {
+                xInRow = 0;
+                yInRow = 0;
             }
         }
 
@@ -126,15 +173,9 @@ public class Main {
             }
         }
 
-        if (numOf3X == 1) {
-            result = "X wins";
-        } else if (numOf3Y == 1) {
-            result = "O wins";
-        }
-
-        if (numOf3X == 0 && numOf3Y == 0 && emptyCells == 0) {
+        if (xInRow != fieldSize && yInRow != fieldSize && emptyCells == 0) {
             result = "Draw";
-        } else if (numOf3X == 0 && numOf3Y == 0 && emptyCells != 0) {
+        } else if (xInRow != fieldSize && yInRow != fieldSize && emptyCells != 0){
             result = "Game not finished";
         }
         return result;
@@ -165,9 +206,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        char[][] state = new char[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        char[][] state = new char[fieldSize][fieldSize];
+        for (int i = 0; i < fieldSize; i++) {
+            for (int j = 0; j < fieldSize; j++) {
                 state[i][j] = '_';
             }
         }

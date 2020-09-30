@@ -49,20 +49,20 @@ public class Main {
         return xy;
     }
 
-    // check if the field is empty at the user coordinates
+    // check if the field is empty at the user coordinates, call this method if want an user input
     private static int[] checkEmpty (char[][] state) {
         int[]xy = checkCoordinates();
         int temp = xy[0];
-        int x = 3- xy[1];
-        int y = temp - 1;
+        xy[0] = 3- xy[1];
+        xy[1] = temp - 1;
 
-        while (true) {
-            if (state[x][y] != '_') {
-                System.out.println("This cell is occupied! Choose another one!");
-                xy = checkCoordinates();
-            } else break;
+        while (state[xy[0]][xy[1]] != '_') {
+            System.out.println("This cell is occupied! Choose another one!");
+            xy = checkCoordinates();
+            temp = xy[0];
+            xy[0] = 3 - xy[1];
+            xy[1] = temp -1;
         }
-        xy = new int[]{x, y};
         return xy;
     }
 
@@ -96,12 +96,45 @@ public class Main {
     }
 
     private static void gameResults (char[][] state) {
-        for (char[] chars : state) {
-            for (int i = 0; i < chars.length; i++) {
-
+        String[] fieldResults = new String[8];
+        fieldResults[0] = Character.toString(state[0][0]) + state[0][1] + state[0][2];
+        fieldResults[1] = Character.toString(state[1][0]) + state[1][1] + state[1][2];
+        fieldResults[2] = Character.toString(state[2][0]) + state[2][1] + state[2][2];
+        fieldResults[3] = Character.toString(state[0][0]) + state[1][0] + state[2][0];
+        fieldResults[4] = Character.toString(state[0][1]) + state[1][1] + state[2][1];
+        fieldResults[5] = Character.toString(state[0][2]) + state[1][2] + state[2][2];
+        fieldResults[6] = Character.toString(state[0][0]) + state[1][1] + state[2][2];
+        fieldResults[7] = Character.toString(state[0][2]) + state[1][1] + state[2][0];
+        int numOf3X = 0;
+        int numOf3Y = 0;
+        int emptyCells = 0;
+        for (String fieldResult : fieldResults) {
+            if (fieldResult.equals("XXX")) {
+                numOf3X += 1;
+            } else if (fieldResult.equals("OOO")) {
+                numOf3Y += 1;
             }
         }
+
+        for (char[] chars : state) {
+            for (int i = 0; i < chars.length; i++) {
+                emptyCells = chars[i] == '_' ? emptyCells + 1 : emptyCells;
+            }
+        }
+
+        if (numOf3X == 1) {
+            System.out.println("X wins");
+        } else if (numOf3Y == 1) {
+            System.out.println("O wins");
+        }
+
+        if (numOf3X == 0 && numOf3Y == 0 && emptyCells == 0) {
+            System.out.println("Draw");
+        } else if (numOf3X == 0 && numOf3Y == 0 && emptyCells != 0) {
+            System.out.println("Game not finished");
+        }
     }
+
     public static void main(String[] args) {
         System.out.println("Enter cells: ");
         String initialState = scanner.nextLine();

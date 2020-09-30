@@ -52,7 +52,7 @@ public class Main {
     }
 
     // check if the field is empty at the user coordinates, call this method if want an user input
-    private static int[] checkEmpty (char[][] state) {
+    public static int[] checkEmpty (char[][] state) {
         int[]xy = checkCoordinates();
         int temp = xy[0];
         xy[0] = 3- xy[1];
@@ -69,7 +69,7 @@ public class Main {
     }
 
     // if everything is good, add this move to the field state char[][] and print it
-    private static char[][] addToField (char[][] state, int[] xy) {
+    public static char[][] addToField (char[][] state, int[] xy) {
         char move = ' ';
         int numOfX = 0;
         int numOfY = 0;
@@ -140,37 +140,124 @@ public class Main {
         return result;
     }
 
-    private static void easyAI () {
+    private static int menu () {
+        String[] menuOptions = {"start easy easy",
+                "start user easy",
+                "start easy user",
+                "start user user",
+                "exit"};
+        int optionIndex = 5;
+
+        // get command
+        while (true) {
+            System.out.print("Input command: ");
+            String userInput = scanner.nextLine();
+            for (int i = 0; i < menuOptions.length; i++) {
+                if (userInput.equals(menuOptions[i])) {
+                    optionIndex = i;
+                }
+            }
+            if (optionIndex == 5) {
+                System.out.println("Bad parameters!");
+            } else break;
+        }
+        return optionIndex;
+    }
+
+    public static void main(String[] args) {
         char[][] state = new char[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 state[i][j] = '_';
             }
         }
-        printField(state);
-        while (true) {
-            state = addToField(state, checkEmpty(state));
-            if (!gameResults(state).equals("Game not finished")) {
-                System.out.println(gameResults(state));
-                System.exit(1);
-            }
-            System.out.println("Making move level \"easy\"");
-            int[] easyMove;
-            while (true) {
-                easyMove = new int[]{random.nextInt(3), random.nextInt(3)};
-                if (state[easyMove[0]][easyMove[1]] == '_') {
-                    break;
-                }
-            }
-            state = addToField(state,easyMove);
-            if (!gameResults(state).equals("Game not finished")) {
-                System.out.println(gameResults(state));
-                System.exit(1);
-            }
-        }
-    }
 
-    public static void main(String[] args) {
-        easyAI();
+        switch (menu()) {
+            case 0:
+                printField(state);
+                while (true) {
+                    EasyAI ai1 = new EasyAI(state);
+                    ai1.setMove();
+                    ai1.setState(state);
+                    state = ai1.getState();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    EasyAI ai2 = new EasyAI(state);
+                    ai2.setMove();
+                    ai2.setState(state);
+                    state = ai2.getState();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 1:
+                printField(state);
+                while (true) {
+                    User user1 = new User(state);
+                    user1.setMove();
+                    user1.setState(state);
+                    state = user1.getState();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    EasyAI ai1 = new EasyAI(state);
+                    ai1.setMove();
+                    ai1.setState(state);
+                    state = ai1.getState();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 2:
+                printField(state);
+                while (true) {
+                    EasyAI ai1 = new EasyAI(state);
+                    ai1.setMove();
+                    ai1.setState(state);
+                    state = ai1.getState();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                    User user1 = new User(state);
+                    user1.setMove();
+                    user1.setState(state);
+                    state = user1.getState();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 3:
+                printField(state);
+                while (true) {
+                    User user1 = new User(state);
+                    user1.setMove();
+                    user1.setState(state);
+                    state = user1.getState();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    User user2 = new User(state);
+                    user2.setMove();
+                    user2.setState(state);
+                    state = user2.getState();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 4:
+                System.exit(1);
+        }
     }
 }

@@ -1,9 +1,11 @@
 package tictactoe;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    public static Scanner scanner = new Scanner(System.in);
+    public final static Scanner scanner = new Scanner(System.in);
+    public final static Random random = new Random();
 
     // given a field state print the field
     private static void printField (char[][] state) {
@@ -95,7 +97,7 @@ public class Main {
         return state;
     }
 
-    private static void gameResults (char[][] state) {
+    private static String gameResults (char[][] state) {
         String[] fieldResults = new String[8];
         fieldResults[0] = Character.toString(state[0][0]) + state[0][1] + state[0][2];
         fieldResults[1] = Character.toString(state[1][0]) + state[1][1] + state[1][2];
@@ -108,6 +110,8 @@ public class Main {
         int numOf3X = 0;
         int numOf3Y = 0;
         int emptyCells = 0;
+        String result = null;
+
         for (String fieldResult : fieldResults) {
             if (fieldResult.equals("XXX")) {
                 numOf3X += 1;
@@ -123,32 +127,50 @@ public class Main {
         }
 
         if (numOf3X == 1) {
-            System.out.println("X wins");
+            result = "X wins";
         } else if (numOf3Y == 1) {
-            System.out.println("O wins");
+            result = "O wins";
         }
 
         if (numOf3X == 0 && numOf3Y == 0 && emptyCells == 0) {
-            System.out.println("Draw");
+            result = "Draw";
         } else if (numOf3X == 0 && numOf3Y == 0 && emptyCells != 0) {
-            System.out.println("Game not finished");
+            result = "Game not finished";
+        }
+        return result;
+    }
+
+    private static void easyAI () {
+        char[][] state = new char[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                state[i][j] = '_';
+            }
+        }
+        printField(state);
+        while (true) {
+            state = addToField(state, checkEmpty(state));
+            if (!gameResults(state).equals("Game not finished")) {
+                System.out.println(gameResults(state));
+                System.exit(1);
+            }
+            System.out.println("Making move level \"easy\"");
+            int[] easyMove;
+            while (true) {
+                easyMove = new int[]{random.nextInt(3), random.nextInt(3)};
+                if (state[easyMove[0]][easyMove[1]] == '_') {
+                    break;
+                }
+            }
+            state = addToField(state,easyMove);
+            if (!gameResults(state).equals("Game not finished")) {
+                System.out.println(gameResults(state));
+                System.exit(1);
+            }
         }
     }
 
     public static void main(String[] args) {
-        System.out.println("Enter cells: ");
-        String initialState = scanner.nextLine();
-
-        int count = 0;
-        char[][] state = new char[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                state[i][j] = initialState.charAt(count);
-                count++;
-            }
-        }
-
-        printField(state);
-        gameResults(addToField(state, checkEmpty(state)));
+        easyAI();
     }
 }

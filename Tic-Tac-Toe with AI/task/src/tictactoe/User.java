@@ -19,4 +19,13 @@ public class User {
     public void setState(char[][] state) {
         this.state = Main.addToField(state, move);
     }
+
+    public char[][] plays () {
+        setMove();
+        setState(state);
+        state = getState();
+        return state;
+    }
 }
+
+

@@ -2,6 +2,10 @@ package tictactoe;
 
 public class EasyAI extends User{
 
+    public EasyAI(char[][] state) {
+        super(state);
+    }
+
     @Override
     public void setMove() {
         while (true) {
@@ -10,9 +14,5 @@ public class EasyAI extends User{
                 break;
             }
         }
-    }
-
-    public EasyAI(char[][] state) {
-        super(state);
     }
 }

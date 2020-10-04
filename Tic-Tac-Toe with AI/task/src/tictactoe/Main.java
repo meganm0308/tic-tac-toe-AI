@@ -1,16 +1,14 @@
 package tictactoe;
 
 import java.util.Arrays;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    public final static Scanner scanner = new Scanner(System.in);
-    public final static Random random = new Random();
-    public final static int fieldSize = 3;
+    final static Scanner scanner = new Scanner(System.in);
+    final static int fieldSize = 3;
 
     // given a field state print the field
-    private static void printField (char[][] state) {
+    static void printField(char[][] state) {
         for (int i = 0; i < 4 + 2 * fieldSize - 1; i++) {
             System.out.print("-");
         }
@@ -28,87 +26,8 @@ public class Main {
         System.out.print("\n");
     }
 
-    // check if user coordinates are numbers
-    private static int[] ifNumbers () {
-        int[] xy = new int[2];
-        while (true) {
-            System.out.println("Enter the coordinates:");
-            try {
-                String xyString = scanner.nextLine();
-                xy[0] = Integer.parseInt(xyString.split(" ")[0]);
-                xy[1] = Integer.parseInt(xyString.split(" ")[1]);
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("You should enter numbers!");
-            }
-        }
-        return xy;
-    }
-
-    // check if user coordinates are within [1,fieldSize]
-    private static int[] checkCoordinates () {
-        int []xy = ifNumbers();
-        while (true) {
-            if (xy[0] <= fieldSize && xy[0] >= 1 && xy[1] <= fieldSize && xy[1] >= 1) {
-                break;
-            } else {
-                System.out.printf("Coordinates should be from 1 to %d!", fieldSize);
-                xy = ifNumbers();
-            }
-        }
-        return xy;
-    }
-
-    // check if the field is empty at the user coordinates, call this method if want an user input
-    public static int[] checkEmpty (char[][] state) {
-        int[]xy = checkCoordinates();
-        int temp = xy[0];
-        xy[0] = fieldSize - xy[1];
-        xy[1] = temp - 1;
-
-        while (state[xy[0]][xy[1]] != '_') {
-            System.out.println("This cell is occupied! Choose another one!");
-            xy = checkCoordinates();
-            temp = xy[0];
-            xy[0] = fieldSize - xy[1];
-            xy[1] = temp -1;
-        }
-        return xy;
-    }
-
-    public static char xOrO (char[][]state) {
-        char move;
-        int numOfX = 0;
-        int numOfO = 0;
-
-        for (char[] chars : state) {
-            for (int i = 0; i < chars.length; i++) {
-                if (chars[i] == 'X') {
-                    numOfX += 1;
-                } else if (chars[i] == 'O') {
-                    numOfO += 1;
-                }
-            }
-        }
-
-        if (numOfX > numOfO) {
-            move = 'O';
-        } else {
-            move = 'X';
-        }
-        return move;
-    }
-
-    // if everything is good, add this move to the field state char[][] and print it
-    public static char[][] addToField (char[][] state, int[] xy) {
-        char move = xOrO(state);
-        state[xy[0]][xy[1]] = move;
-        printField(state);
-        return state;
-    }
-
     // all rows and columns and diagonals
-    protected static String[] fieldPossibilities (char[][] state) {
+     static String[] fieldPossibilities (char[][] state) {
         String[] fieldResults = new String[fieldSize * 2 + 2];
         Arrays.fill(fieldResults, "");
 
@@ -141,7 +60,7 @@ public class Main {
     }
 
     // who wins?
-    private static String gameResults (char[][] state) {
+     static String gameResults (char[][] state) {
         String[] fieldResults = fieldPossibilities(state);
         int emptyCells = 0;
         String result = null;
@@ -193,6 +112,13 @@ public class Main {
                 "start medium medium",
                 "start easy medium",
                 "start medium easy",
+                "start user hard",
+                "start hard user",
+                "start hard hard",
+                "start medium hard",
+                "start hard medium",
+                "start easy hard",
+                "start hard easy",
                 "exit"};
         int optionIndex = menuOptions.length;
 
@@ -212,7 +138,7 @@ public class Main {
         return optionIndex;
     }
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         char[][] state = new char[fieldSize][fieldSize];
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
@@ -386,6 +312,141 @@ public class Main {
                     }
                 }
             case 9:
+                printField(state);
+
+                while (true) {
+                    User user1 = new User(state);
+                    state = user1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    HardAI ai1 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 10:
+                printField(state);
+
+                while (true) {
+                    HardAI ai1 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    User user1 = new User(state);
+                    state = user1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 11:
+                printField(state);
+
+                while (true) {
+                    HardAI ai1 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    HardAI ai2 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai2.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 12:
+                printField(state);
+
+                while (true) {
+                    System.out.println("Making move level \"medium\"");
+                    MediumAI mediumAI1 = new MediumAI(state);
+                    state = mediumAI1.plays();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                    HardAI ai1 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 13:
+                printField(state);
+
+                while (true) {
+                    HardAI ai1 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    System.out.println("Making move level \"medium\"");
+                    MediumAI mediumAI1 = new MediumAI(state);
+                    state = mediumAI1.plays();
+                    if (!gameResults(state).equals("Game not finished")){
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 14:
+                printField(state);
+                while (true) {
+                    EasyAI ai1 = new EasyAI(state);
+                    System.out.println("Making move level \"easy\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    HardAI ai2 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai2.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+            case 15:
+                printField(state);
+                while (true) {
+                    HardAI ai2 = new HardAI(state);
+                    System.out.println("Making move level \"hard\"");
+                    state = ai2.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+
+                    EasyAI ai1 = new EasyAI(state);
+                    System.out.println("Making move level \"easy\"");
+                    state = ai1.plays();
+                    if (!gameResults(state).equals("Game not finished")) {
+                        System.out.println(gameResults(state));
+                        System.exit(1);
+                    }
+                }
+                case 16:
                 System.exit(1);
         }
     }
